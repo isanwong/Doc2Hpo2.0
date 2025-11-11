@@ -16,7 +16,7 @@ class Findings(BaseModel):
     findings: list[str]
 
 class GptSearch:
-    def __init__(self, model="gpt-4o-2024-08-06",openai_api_key=None):
+    def __init__(self, model="gpt-4o-2024-08-06",openai_api_key=None,base_url=None):
         if openai_api_key is None:
             user_input = input("Enter your OpenAI API key: ")
             if len(user_input) > 0:
@@ -27,7 +27,8 @@ class GptSearch:
             self.openai_api_key = openai_api_key
         
         self.model = model
-        
+        self.base_url = base_url
+    
     def search_clinical_findings(self,text, test=False):
         
         system_message = '''
@@ -44,7 +45,7 @@ class GptSearch:
         '''
         # Step 1: Call OpenAI to analyze the text for phenotype terms
         try:
-            client = OpenAI(api_key=self.openai_api_key)
+            client = OpenAI(api_key=self.openai_api_key,base_url=self.base_url)
             completion = client.beta.chat.completions.parse(
                 model=self.model,
                 messages=[
@@ -135,7 +136,7 @@ class GptSearch:
                          
         # Step 1: Call OpenAI to analyze the text for phenotype terms
         try:
-            client = OpenAI(api_key=self.openai_api_key)
+            client = OpenAI(api_key=self.openai_api_key,base_url=self.base_url)
             completion = client.beta.chat.completions.parse(
                 model=self.model,
                 messages=[

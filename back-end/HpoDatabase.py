@@ -148,9 +148,9 @@ class HpoDatabase:
         if self.use_chromdb:
             if self.embedding_model is None:
                 # get collection
-                collection = self.chromadb_client.get_collection(name='hpo_default')
+                collection = self.chromadb_client.get_or_create_collection(name='hpo_default')
             else:
-                collection = self.chromadb_client.get_collection(name=f'hpo_{self.embedding_model}', embedding_function=self.ef)
+                collection = self.chromadb_client.get_or_create_collection(name=f'hpo_{self.embedding_model}', embedding_function=self.ef)
             # query
             results = collection.query(
                 query_texts=[text],
@@ -213,7 +213,7 @@ class HpoDatabase:
         if self.use_chromdb:
             if len(results['distances'][0]) > 1:
                 raise ValueError("More than one results found.")
-            if results['distances'][0][0] < distance_threshold:
+            if results['distances'][0] == 1 and results['distances'][0][0] < distance_threshold:
                 hpo_id = results['ids'][0][0]
                 hpo_name = results['metadatas'][0][0]['term']
                 return hpo_id, hpo_name
